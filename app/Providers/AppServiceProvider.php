@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use JeroenNoten\LaravelAdminLte\Events\BuildingMenu;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\URL;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -26,6 +27,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+
+        if (app()->environment('local')) {
+            URL::forceScheme('https');
+        }
 
         Event::listen(BuildingMenu::class, function (BuildingMenu $event) {
             $user = Auth::user();
