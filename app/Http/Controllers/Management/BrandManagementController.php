@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Management;
 
 use App\Http\Controllers\Controller;
 use App\Models\Brand;
-use App\Models\Product;
 use Illuminate\Http\Request;
 
 class BrandManagementController extends Controller
@@ -12,9 +11,8 @@ class BrandManagementController extends Controller
     public function index()
     {
         $brands = Brand::all();
-        $products = Product::all(); // Ambil semua produk
 
-        return view('pages.brand-management.index', compact('brands', 'products'));
+        return view('pages.brand-management.index', compact('brands'));
     }
     public function create()
     {

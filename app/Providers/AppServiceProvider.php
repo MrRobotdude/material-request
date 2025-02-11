@@ -28,9 +28,9 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
 
-        if (app()->environment('local')) {
-            URL::forceScheme('https');
-        }
+        // if (app()->environment('local')) {
+        //     URL::forceScheme('https');
+        // }
 
         Event::listen(BuildingMenu::class, function (BuildingMenu $event) {
             $user = Auth::user();

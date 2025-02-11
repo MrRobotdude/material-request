@@ -122,7 +122,7 @@ class BrandProductSpecificationController extends Controller
         ));
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
         $validated = $request->validate([
             'brand_code' => 'required|exists:brands,brand_code',

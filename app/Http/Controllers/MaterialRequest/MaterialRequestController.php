@@ -178,7 +178,7 @@ class MaterialRequestController extends Controller
         return redirect()->route('material-request.index')->with('success', "{$mrCode} berhasil diperbarui.");
     }
 
-    public function approve(Request $request, $mrCode)
+    public function approve($mrCode)
     {
         $materialRequest = MaterialRequest::where('mr_code', $mrCode)->first();
 

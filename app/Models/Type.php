@@ -19,7 +19,7 @@ class Type extends Model
 
     public function subTypes()
     {
-        return $this->hasMany(SubType::class, 'type_code', 'type_code')->withTimestamps();
+        return $this->hasMany(SubType::class, 'type_code', 'type_code');
     }
 
     public static function generateTypeCode()

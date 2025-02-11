@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Management;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
-use App\Models\Specification;
 use Illuminate\Http\Request;
 
 class ProductManagementController extends Controller
