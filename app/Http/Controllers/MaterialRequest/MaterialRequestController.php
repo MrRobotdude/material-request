@@ -125,7 +125,7 @@ class MaterialRequestController extends Controller
             'mr_code' => $mrCode,
             'project_id' => $validated['project_id'],
             'note' => $validated['note'],
-            'created_by' => auth()->user()->name,
+            'created_by' => $validated['created_by'],
             'status' => 'created',
         ]);
 
