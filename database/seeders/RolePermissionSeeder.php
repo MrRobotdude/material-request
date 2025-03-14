@@ -17,8 +17,7 @@ class RolePermissionSeeder extends Seeder
             'Operational',
             'Marketing',
             'Warehouse',
-            'Finance',
-            'User',
+            'Data Entry',
         ];
 
         $roleInstances = [];
@@ -80,6 +79,8 @@ class RolePermissionSeeder extends Seeder
             'approve_material_request',
             'cancel_material_request',
             'view_material_request_items',
+            'cancel_material_request_item',
+            'release_material_request_item',
             'manage_all_material_requests',
             'manage_all_projects',
             'view_projects_page',
@@ -112,12 +113,7 @@ class RolePermissionSeeder extends Seeder
 
         // Purchasing
         $roleInstances['Purchasing']->permissions()->attach([
-            $permissionInstances['view_material_requests_page']->id,
-            $permissionInstances['add_material_request']->id,
-            $permissionInstances['edit_material_request']->id,
-            $permissionInstances['approve_material_request']->id,
-            $permissionInstances['cancel_material_request']->id,
-            $permissionInstances['view_material_request_items']->id,
+            $permissionInstances['manage_all_material_requests']->id,
         ]);
 
         // Operational
@@ -125,45 +121,30 @@ class RolePermissionSeeder extends Seeder
             $permissionInstances['view_material_requests_page']->id,
             $permissionInstances['add_material_request']->id,
             $permissionInstances['edit_material_request']->id,
-            $permissionInstances['approve_material_request']->id,
             $permissionInstances['cancel_material_request']->id,
             $permissionInstances['view_material_request_items']->id,
+            $permissionInstances['cancel_material_request_item']->id,
         ]);
 
         // Marketing
         $roleInstances['Marketing']->permissions()->attach([
-            $permissionInstances['view_brands_page']->id,
-            $permissionInstances['add_brand']->id,
-            $permissionInstances['edit_brand']->id,
-            $permissionInstances['view_products_page']->id,
-            $permissionInstances['add_product']->id,
-            $permissionInstances['edit_product']->id,
+            $permissionInstances['manage_all_projects']->id,
         ]);
 
         // Warehouse
         $roleInstances['Warehouse']->permissions()->attach([
-            $permissionInstances['view_material_requests_page']->id,
-            $permissionInstances['add_material_request']->id,
-            $permissionInstances['edit_material_request']->id,
-            $permissionInstances['approve_material_request']->id,
-            $permissionInstances['cancel_material_request']->id,
-            $permissionInstances['view_material_request_items']->id,
+            $permissionInstances['manage_all_material_requests']->id,
         ]);
 
         // Finance
-        $roleInstances['Finance']->permissions()->attach([
-            $permissionInstances['view_material_requests_page']->id,
-            $permissionInstances['manage_all_material_requests']->id,
-            $permissionInstances['approve_material_request']->id,
+        $roleInstances['Data Entry']->permissions()->attach([
+            $permissionInstances['manage_all_brand']->id,
+            $permissionInstances['manage_all_product']->id,
+            $permissionInstances['manage_all_types']->id,
+            $permissionInstances['manage_all_subtypes']->id,
+            $permissionInstances['manage_all_specifications']->id,
+            $permissionInstances['manage_all_brand_product_specification']->id,
+            $permissionInstances['manage_all_items']->id,
         ]);
-
-        // User
-        $roleInstances['User']->permissions()->attach([
-            $permissionInstances['view_material_requests_page']->id,
-            $permissionInstances['add_material_request']->id,
-            $permissionInstances['view_material_request_items']->id,
-        ]);
-
-        echo "Permissions successfully distributed to roles.\n";
     }
 }

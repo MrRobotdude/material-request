@@ -88,27 +88,34 @@
                             {{-- Tampilkan item yang sudah ada --}}
                             @foreach ($materialRequest->items as $index => $item)
                                 <div class="row item-row mb-2">
-                                    <div class="col-md-6">
-                                        <select name="items[{{ $index }}][item_id]" class="form-control select2">
+                                    <div class="col-md-4">
+                                        <select name="items[{{ $index }}][item_id]"
+                                            class="form-control select2 item-select">
                                             <option value="" disabled>-- Pilih Item --</option>
                                             @foreach ($availableItems as $availableItem)
                                                 <option value="{{ $availableItem->item_id }}"
-                                                    {{ $item->item_id == $availableItem->item_id ? 'selected' : '' }}>
+                                                    {{ $item->item_id == $availableItem->item_id ? 'selected' : '' }}
+                                                    data-price="{{ $availableItem->price }}">
                                                     {{ $availableItem->description }}
                                                 </option>
                                             @endforeach
                                         </select>
-                                        @error("items.{$index}.item_id")
-                                            <span class="text-danger">{{ $message }}</span>
-                                        @enderror
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-2">
+                                        <input type="number" name="items[{{ $index }}][price]"
+                                            class="form-control item-price" placeholder="Harga"
+                                            value="{{ old('items.' . $index . '.price', $item->price ?? '') }}">
+                                    </div>
+                                    <div class="col-md-2">
                                         <input type="number" name="items[{{ $index }}][quantity]"
-                                            class="form-control" placeholder="Kuantitas"
+                                            class="form-control item-quantity" placeholder="Kuantitas"
                                             value="{{ old('items.' . $index . '.quantity', $item->quantity ?? '') }}">
-                                        @error("items.{$index}.quantity")
-                                            <span class="text-danger">{{ $message }}</span>
-                                        @enderror
+                                    </div>
+                                    <div class="col-md-2">
+                                        <input type="text" name="items[{{ $index }}][total_price]"
+                                            class="form-control item-total-price" placeholder="Total Harga"
+                                            value="{{ old('items.' . $index . '.total_price', $item->price * $item->quantity ?? '') }}"
+                                            readonly>
                                     </div>
                                     <div class="col-md-2">
                                         <button type="button" class="btn btn-danger btn-sm remove-item">Hapus</button>
@@ -140,81 +147,69 @@
 
             $('.select2').select2({
                 theme: 'bootstrap4',
-                width: '100%',
-                matcher: function(params, data) {
-                    // Jika tidak ada teks pencarian, tampilkan semua data
-                    if ($.trim(params.term) === '') {
-                        return data;
-                    }
-
-                    // Pisahkan teks pencarian menjadi array kata kunci
-                    const keywords = params.term.toLowerCase().split(' ');
-
-                    // Gabungkan semua teks dalam opsi ke satu string untuk dicari
-                    const text = data.text.toLowerCase();
-
-                    // Cek apakah semua kata kunci ada dalam teks
-                    const matches = keywords.every(keyword => text.includes(keyword));
-
-                    if (matches) {
-                        return data;
-                    }
-
-                    // Jika tidak cocok, jangan tampilkan opsi ini
-                    return null;
-                }
+                width: '100%'
             });
 
             $('#add-item').on('click', function() {
                 const itemRow = `
-                    <div class="row item-row mb-2">
-                        <div class="col-md-6">
-                            <select name="items[${itemIndex}][item_id]" class="form-control select2">
-                                <option value="" disabled selected>-- Pilih Item --</option>
-                                ${availableItems.map(item => `<option value="${item.item_id}">${item.description}</option>`).join('')}
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <input type="number" name="items[${itemIndex}][quantity]" class="form-control"
-                                placeholder="Kuantitas">
-                        </div>
-                        <div class="col-md-2">
-                            <button type="button" class="btn btn-danger btn-sm remove-item">Hapus</button>
-                        </div>
-                    </div>
-                `;
+            <div class="row item-row mb-2">
+                <div class="col-md-4">
+                    <select name="items[${itemIndex}][item_id]" class="form-control select2 item-select">
+                        <option value="" disabled selected>-- Pilih Item --</option>
+                        ${availableItems.map(item => `<option value="${item.item_id}" data-price="${item.price}">${item.description}</option>`).join('')}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <input type="number" name="items[${itemIndex}][price]" class="form-control item-price"
+                        placeholder="Harga">
+                </div>
+                <div class="col-md-2">
+                    <input type="number" name="items[${itemIndex}][quantity]" class="form-control item-quantity"
+                        placeholder="Kuantitas">
+                </div>
+                <div class="col-md-2">
+                    <input type="text" name="items[${itemIndex}][total_price]" class="form-control item-total-price"
+                        placeholder="Total Harga" readonly>
+                </div>
+                <div class="col-md-2">
+                    <button type="button" class="btn btn-danger btn-sm remove-item">Hapus</button>
+                </div>
+            </div>
+        `;
                 $('#items-container').append(itemRow);
 
-                // Inisialisasi Select2 menggunakan AdminLTE
+                // Inisialisasi Select2
                 $(`[name="items[${itemIndex}][item_id]"]`).select2({
                     theme: 'bootstrap4',
-                    width: '100%',
-                    matcher: function(params, data) {
-                        // Jika tidak ada teks pencarian, tampilkan semua data
-                        if ($.trim(params.term) === '') {
-                            return data;
-                        }
-
-                        // Pisahkan teks pencarian menjadi array kata kunci
-                        const keywords = params.term.toLowerCase().split(' ');
-
-                        // Gabungkan semua teks dalam opsi ke satu string untuk dicari
-                        const text = data.text.toLowerCase();
-
-                        // Cek apakah semua kata kunci ada dalam teks
-                        const matches = keywords.every(keyword => text.includes(keyword));
-
-                        if (matches) {
-                            return data;
-                        }
-
-                        // Jika tidak cocok, jangan tampilkan opsi ini
-                        return null;
-                    }
+                    width: '100%'
                 });
 
                 itemIndex++;
             });
+
+            // Event untuk mengubah harga berdasarkan item yang dipilih
+            $(document).on('input', '.item-price', function() {
+                const parentRow = $(this).closest('.item-row');
+                updateTotalPrice(parentRow);
+            });
+
+            // Event untuk mengupdate total harga berdasarkan kuantitas
+            $(document).on('input', '.item-quantity', function() {
+                const parentRow = $(this).closest('.item-row');
+                updateTotalPrice(parentRow);
+            });
+
+            // Fungsi untuk menghitung total harga
+            function updateTotalPrice(parentRow) {
+                const price = parseFloat(parentRow.find('.item-price').val()) || 0;
+                const quantity = parseInt(parentRow.find('.item-quantity').val()) || 0;
+                const totalPrice = price * quantity;
+
+                parentRow.find('.item-total-price').val(totalPrice.toLocaleString('id-ID', {
+                    style: 'currency',
+                    currency: 'IDR'
+                }));
+            }
 
             $(document).on('click', '.remove-item', function() {
                 $(this).closest('.item-row').remove();

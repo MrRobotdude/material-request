@@ -121,15 +121,16 @@
     </x-adminlte-card>
 
     {{-- Material Request Item Table --}}
-    {{-- Material Request Item Table --}}
     <x-adminlte-card id="materialRequestItemCard" title="Material Request Items" theme="info" collapsible>
         <div id="materialRequestItemContainer" style="display: none;">
             <h4 id="materialRequestItemTitle">Items untuk MR: </h4>
             <x-adminlte-datatable id="materialRequestItemTable" :heads="[
                 'Kode Item',
                 'Deskripsi',
+                'Harga Satuan (Rp)',
                 'Jumlah',
                 'Terpenuhi',
+                'Total Harga (Rp)',
                 'Status',
                 ['label' => 'Action', 'no-export' => true, 'width' => 10],
             ]" striped hoverable with-buttons bordered>
@@ -145,6 +146,9 @@
 @section('js')
     <script>
         let materialRequestItemTable;
+
+        const cancelItemPermission = @json(auth()->user()->hasPermission('cancel_material_request_item'));
+        const releaseItemPermission = @json(auth()->user()->hasPermission('release_material_request_item'));
 
         function approveMR(materialRequestId) {
             Swal.fire({
@@ -230,6 +234,7 @@
                     tableBody.innerHTML = '';
                     items.forEach((item) => {
                         const cancelButton =
+                            cancelItemPermission &&
                             item.status.toLowerCase() !== 'fulfilled' &&
                             item.status.toLowerCase() !== 'cancelled' &&
                             item.status.toLowerCase() !== 'completed' ?
@@ -237,6 +242,7 @@
                             '';
 
                         const releaseButton =
+                            releaseItemPermission &&
                             material_request_status !== 'created' &&
                             item.status.toLowerCase() !== 'fulfilled' &&
                             item.status.toLowerCase() !== 'cancelled' ?
@@ -244,14 +250,16 @@
                             '';
 
                         const row = `
-                    <tr>
-                        <td>${item.item_code}</td>
-                        <td>${item.description}</td>
-                        <td>${item.quantity}</td>
-                        <td>${item.fulfilled_quantity}</td>
-                        <td>${item.status}</td>
-                        <td class="d-flex justify-content-between">${cancelButton} ${releaseButton}</td>
-                    </tr>`;
+                            <tr>
+                                <td>${item.item_code}</td>
+                                <td>${item.description}</td>
+                                <td>Rp ${new Intl.NumberFormat('id-ID').format(item.price)}</td>
+                                <td>${item.quantity}</td>
+                                <td>${item.fulfilled_quantity}</td>
+                                <td>Rp ${new Intl.NumberFormat('id-ID').format(item.price * item.quantity)}</td>
+                                <td>${item.status}</td>
+                                <td class="d-flex justify-content-between">${cancelButton} ${releaseButton}</td>
+                            </tr>`;
                         tableBody.insertAdjacentHTML('beforeend', row);
                     });
 

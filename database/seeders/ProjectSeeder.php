@@ -11,26 +11,33 @@ class ProjectSeeder extends Seeder
     public function run()
     {
         DB::table('projects')->insert([
-            ['project_name' => 'Pengembangan Server', 'description' => 'Proyek pengembangan server utama'],
-            ['project_name' => 'Pembangunan Gedung', 'description' => 'Proyek pembangunan gedung baru'],
-            ['project_name' => 'Digital Transformation', 'description' => 'Proyek transformasi digital'],
-            ['project_name' => 'Implementasi ERP', 'description' => 'Proyek implementasi sistem ERP perusahaan'],
-            ['project_name' => 'Modernisasi Infrastruktur', 'description' => 'Proyek modernisasi infrastruktur IT'],
-            ['project_name' => 'Pengembangan Aplikasi Mobile', 'description' => 'Proyek pengembangan aplikasi untuk pengguna mobile'],
-            ['project_name' => 'Analisis Data Perusahaan', 'description' => 'Proyek pengolahan dan analisis data perusahaan'],
-            ['project_name' => 'Migrasi Data', 'description' => 'Proyek migrasi data dari sistem lama'],
-            ['project_name' => 'Peningkatan Keamanan', 'description' => 'Proyek peningkatan keamanan sistem perusahaan'],
-            ['project_name' => 'Automasi Proses Bisnis', 'description' => 'Proyek automasi berbagai proses bisnis'],
-            ['project_name' => 'Peningkatan Sistem Manajemen', 'description' => 'Proyek perbaikan sistem manajemen'],
-            ['project_name' => 'Pengembangan Jaringan', 'description' => 'Proyek pengembangan jaringan perusahaan'],
-            ['project_name' => 'Desain Ulang Website', 'description' => 'Proyek redesign website perusahaan'],
-            ['project_name' => 'Pengembangan Chatbot', 'description' => 'Proyek pengembangan chatbot untuk layanan pelanggan'],
-            ['project_name' => 'Pelatihan Karyawan', 'description' => 'Proyek pelatihan karyawan terkait sistem baru'],
-            ['project_name' => 'Penelitian Pasar', 'description' => 'Proyek penelitian pasar untuk pengembangan produk'],
-            ['project_name' => 'Optimalisasi Produksi', 'description' => 'Proyek optimalisasi proses produksi'],
-            ['project_name' => 'Pengembangan CRM', 'description' => 'Proyek pengembangan sistem manajemen hubungan pelanggan'],
-            ['project_name' => 'Pembangunan Data Center', 'description' => 'Proyek pembangunan data center baru'],
-            ['project_name' => 'Pengembangan Sistem Cloud', 'description' => 'Proyek pengembangan sistem berbasis cloud'],
+            // 🔹 Proyek Pemasangan & Instalasi HVAC
+            ['project_name' => 'Instalasi Sistem HVAC Gedung Perkantoran', 'description' => 'Proyek pemasangan sistem HVAC untuk gedung perkantoran baru'],
+            ['project_name' => 'Instalasi Chiller untuk Pabrik', 'description' => 'Proyek pemasangan chiller untuk kebutuhan pendinginan di pabrik'],
+            ['project_name' => 'Pemasangan AC VRF di Hotel', 'description' => 'Proyek instalasi sistem VRF untuk meningkatkan efisiensi pendinginan di hotel'],
+            ['project_name' => 'Penggantian Cooling Tower di Rumah Sakit', 'description' => 'Proyek peremajaan cooling tower untuk sistem pendinginan rumah sakit'],
+            ['project_name' => 'Pemasangan AHU dan FCU di Mall', 'description' => 'Proyek pemasangan Air Handling Unit dan Fan Coil Unit untuk pusat perbelanjaan'],
+            ['project_name' => 'Instalasi Ventilasi Industri', 'description' => 'Proyek pemasangan sistem ventilasi untuk area produksi industri'],
+
+            // 🔹 Proyek Pemeliharaan & Perawatan HVAC
+            ['project_name' => 'Maintenance HVAC Tahunan', 'description' => 'Proyek perawatan berkala sistem HVAC di berbagai gedung'],
+            ['project_name' => 'Optimasi Efisiensi Energi HVAC', 'description' => 'Proyek peningkatan efisiensi energi dalam sistem pendinginan dan pemanasan'],
+            ['project_name' => 'Pembersihan dan Kalibrasi Ducting', 'description' => 'Proyek pembersihan saluran udara dan kalibrasi untuk menjaga kualitas udara'],
+            ['project_name' => 'Peningkatan Kualitas Udara dalam Ruangan (IAQ)', 'description' => 'Proyek pemasangan HEPA filter dan purifikasi udara untuk meningkatkan kualitas udara'],
+            ['project_name' => 'Peremajaan Sistem HVAC Gedung Lama', 'description' => 'Proyek penggantian dan peningkatan sistem HVAC di gedung lama'],
+
+            // 🔹 Proyek Inovasi & Pengembangan Teknologi HVAC
+            ['project_name' => 'Implementasi Sistem Smart HVAC', 'description' => 'Proyek penerapan IoT dan sensor cerdas dalam sistem HVAC'],
+            ['project_name' => 'Pengembangan Sistem Otomasi HVAC', 'description' => 'Proyek otomatisasi pengaturan suhu dan kelembaban berbasis AI'],
+            ['project_name' => 'Penggunaan Refrigeran Ramah Lingkungan', 'description' => 'Proyek penggantian refrigeran dengan bahan yang lebih ramah lingkungan'],
+            ['project_name' => 'Uji Coba Sistem Pendingin Hemat Energi', 'description' => 'Proyek penelitian dan pengujian sistem pendingin dengan konsumsi energi lebih rendah'],
+            ['project_name' => 'Peningkatan Efisiensi Thermal dalam Bangunan', 'description' => 'Proyek optimalisasi isolasi termal untuk mengurangi beban HVAC'],
+
+            // 🔹 Proyek HVAC untuk Sektor Khusus
+            ['project_name' => 'Instalasi HVAC untuk Cold Storage', 'description' => 'Proyek pemasangan sistem pendinginan untuk penyimpanan bahan makanan dan farmasi'],
+            ['project_name' => 'Sistem HVAC untuk Data Center', 'description' => 'Proyek pemasangan HVAC dengan kontrol kelembaban dan suhu presisi di data center'],
+            ['project_name' => 'Pemasangan HVAC di Rumah Sakit', 'description' => 'Proyek instalasi sistem pendinginan dan ventilasi khusus untuk rumah sakit'],
+            ['project_name' => 'Ventilasi dan Pengaturan Udara di Pabrik Kimia', 'description' => 'Proyek pemasangan sistem ventilasi yang sesuai dengan standar industri kimia'],
         ]);
     }
 }

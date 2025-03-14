@@ -10,7 +10,7 @@ class Brand extends Model
     use HasFactory;
 
     public $timestamps = true;
-
+    protected $table = 'brands';
     protected $primaryKey = 'brand_code'; // Primary key adalah brand_code
     public $incrementing = false; // Non-incremental key
     protected $keyType = 'string'; // Tipe data primary key adalah string

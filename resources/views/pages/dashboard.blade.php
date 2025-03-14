@@ -120,154 +120,65 @@
 @section('js')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Pie Chart
-            const pieCtx = document.getElementById('materialRequestStatusChart').getContext('2d');
-            const pieChartConfig = {
-                type: 'pie',
-                data: {
-                    labels: [], // Akan diisi dari API
-                    datasets: [{
-                        label: 'Material Request Item Status',
-                        data: [], // Akan diisi dari API
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false
-                }
-            };
-
-            let pieChart = new Chart(pieCtx, pieChartConfig);
-
-            // Bar Chart
-            const barCtx = document.getElementById('monthlyMRChart').getContext('2d');
-            const barChartConfig = {
-                type: 'bar',
-                data: {
-                    labels: [], // Dynamically filled
-                    datasets: [], // Dynamically filled
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        xAxes: [{
-                            stacked: true
-                        }],
-                        yAxes: [{
-                            stacked: true
-                        }]
-                    },
-                    plugins: {
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return `${context.dataset.label}: ${context.raw}`;
-                                }
-                            }
-                        },
-                        legend: {
-                            position: 'top'
-                        }
-                    }
-                }
-            };
-            let barChart = new Chart(barCtx, barChartConfig);
-
             const yearSelect = $('#year-select');
             const monthSelect = $('#month-select');
 
-            // Update Bar Chart
-            function updateBarChart(year) {
-                fetch(`/dashboard/monthly-status-chart/${year}`)
-                    .then(response => response.json())
-                    .then(data => {
+            let pieChart, barChart;
 
-                        // Perbarui data pada chart
-                        barChart.data.labels = data.labels; // Bulan
-                        barChart.data.datasets = data.datasets.map(dataset => ({
-                            label: dataset.status,
-                            data: dataset.data,
-                            backgroundColor: dataset.color
-                        }));
-                        barChart.update();
-                    });
+            // Inisialisasi Dashboard
+            function initDashboard() {
+                initCharts();
+                loadInitialData();
+                attachEventListeners();
             }
 
-            function updatePieChart(year, month) {
-                fetch(`/dashboard/chart/${year}/${month}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        pieChart.data.labels = data.labels; // Labels
-                        pieChart.data.datasets[0].data = data.data; // Data
-                        pieChart.data.datasets[0].backgroundColor = data.colors; // Colors
-                        pieChart.update();
-                    })
-                    .catch(error => console.error('Error fetching chart data:', error));
+            // Inisialisasi Chart
+            function initCharts() {
+                const pieCtx = document.getElementById('materialRequestStatusChart').getContext('2d');
+                const barCtx = document.getElementById('monthlyMRChart').getContext('2d');
+
+                pieChart = new Chart(pieCtx, {
+                    type: 'pie',
+                    data: { labels: [], datasets: [{ label: 'Material Request Item Status', data: [] }] },
+                    options: { responsive: true, maintainAspectRatio: false }
+                });
+
+                barChart = new Chart(barCtx, {
+                    type: 'bar',
+                    data: { labels: [], datasets: [] },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: { xAxes: [{ stacked: true }], yAxes: [{ stacked: true }] },
+                        plugins: {
+                            tooltip: { callbacks: { label: context => `${context.dataset.label}: ${context.raw}` } },
+                            legend: { position: 'top' }
+                        }
+                    }
+                });
             }
 
-
-            // Update Top 5 Items Table
-            function updateTopItemsTable(year, month) {
-                fetch(`/dashboard/top-items/${year}/${month}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        const tableBody = document.getElementById('topItemsTable').querySelector('tbody');
-                        tableBody.innerHTML = ''; // Hapus data lama
-
-                        data.forEach(item => {
-                            const row = document.createElement('tr');
-                            row.innerHTML = `
-                    <td>${item.description}</td>
-                    <td>${item.total_quantity}</td>
-                `;
-                            tableBody.appendChild(row);
-                        });
-                    })
-                    .catch(error => console.error('Error fetching top items data:', error));
+            // Memuat Data Awal
+            function loadInitialData() {
+                const selectedYear = yearSelect.val();
+                updateMonthOptions(selectedYear);
+                updateBarChart(selectedYear);
+                updatePieChart(selectedYear, monthSelect.val());
+                updateTables(selectedYear, monthSelect.val());
             }
 
-            function updateTopProjectsTable(year, month) {
-                fetch(`/dashboard/top-projects/${year}/${month}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        const tableBody = document.getElementById('topProjectsTable').querySelector('tbody');
-                        tableBody.innerHTML = ''; // Hapus data lama
-                        data.forEach(project => {
-                            const row = document.createElement('tr');
-                            row.innerHTML = `
-                    <td>${project.project_name}</td>
-                    <td>${project.total_quantity}</td>
-                `;
-                            tableBody.appendChild(row);
-                        });
-                    })
-                    .catch(error => console.error('Error fetching top projects data:', error));
-            }
-
-            function updateTables(year, month) {
-                updateTopItemsTable(year, month);
-                updateTopProjectsTable(year, month);
-            }
-
-            // Update Month Options
+            // Memuat Opsi Bulan Berdasarkan Tahun
             function updateMonthOptions(year) {
                 fetch(`/dashboard/months/${year}`)
                     .then(response => response.json())
                     .then(data => {
-                        // Clear existing options
                         monthSelect.empty();
-
-                        // Add new month options
                         data.forEach(month => {
                             const monthValue = String(month).padStart(2, '0');
-                            const monthText = new Date(0, month - 1).toLocaleString('default', {
-                                month: 'long'
-                            });
+                            const monthText = new Date(0, month - 1).toLocaleString('default', { month: 'long' });
                             monthSelect.append(new Option(monthText, monthValue));
                         });
 
-                        // Trigger chart update for the first available month
                         if (data.length > 0) {
                             const firstMonth = String(data[0]).padStart(2, '0');
                             monthSelect.val(firstMonth).trigger('change');
@@ -275,29 +186,95 @@
                     });
             }
 
-            // Event listeners
-            yearSelect.on('change', function() {
+            // Memperbarui Chart Batang (Bar Chart)
+            function updateBarChart(year) {
+                fetch(`/dashboard/monthly-status-chart/${year}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        barChart.data.labels = data.labels;
+                        barChart.data.datasets = data.datasets.map(dataset => ({
+                            label: dataset.status, data: dataset.data, backgroundColor: dataset.color
+                        }));
+                        barChart.update();
+                    });
+            }
+
+            // Memperbarui Chart Pie
+            function updatePieChart(year, month) {
+                fetch(`/dashboard/chart/${year}/${month}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        pieChart.data.labels = data.labels;
+                        pieChart.data.datasets[0].data = data.data;
+                        pieChart.data.datasets[0].backgroundColor = data.colors;
+                        pieChart.update();
+                    })
+                    .catch(error => console.error('Error fetching chart data:', error));
+            }
+
+            // Memperbarui Tabel Top 5 Item
+            function updateTopItemsTable(year, month) {
+                fetch(`/dashboard/top-items/${year}/${month}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const tableBody = document.getElementById('topItemsTable').querySelector('tbody');
+                        tableBody.innerHTML = '';
+                        data.forEach(item => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `<td>${item.description}</td><td>${item.total_quantity}</td>`;
+                            tableBody.appendChild(row);
+                        });
+                    })
+                    .catch(error => console.error('Error fetching top items data:', error));
+            }
+
+            // Memperbarui Tabel Top 5 Proyek
+            function updateTopProjectsTable(year, month) {
+                fetch(`/dashboard/top-projects/${year}/${month}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const tableBody = document.getElementById('topProjectsTable').querySelector('tbody');
+                        tableBody.innerHTML = '';
+                        data.forEach(project => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `<td>${project.project_name}</td><td>${project.total_quantity}</td>`;
+                            tableBody.appendChild(row);
+                        });
+                    })
+                    .catch(error => console.error('Error fetching top projects data:', error));
+            }
+
+            // Memperbarui Semua Tabel
+            function updateTables(year, month) {
+                updateTopItemsTable(year, month);
+                updateTopProjectsTable(year, month);
+            }
+
+            // Handler untuk Perubahan Tahun
+            function handleYearChange() {
                 const selectedYear = this.value;
-                updateMonthOptions(selectedYear); // Update months when the year changes
+                updateMonthOptions(selectedYear);
                 updateBarChart(selectedYear);
                 updatePieChart(selectedYear, monthSelect.val());
                 updateTables(selectedYear, monthSelect.val());
-            });
+            }
 
-            monthSelect.on('change', function() {
+            // Handler untuk Perubahan Bulan
+            function handleMonthChange() {
                 const selectedYear = yearSelect.val();
                 const selectedMonth = this.value;
-
-                // Update pie chart based on selected year and month
                 updatePieChart(selectedYear, selectedMonth);
                 updateTables(selectedYear, selectedMonth);
-            });
+            }
 
-            // Initial Load
-            updateBarChart(yearSelect.val());
-            updateMonthOptions(yearSelect.val());
-            updatePieChart(yearSelect.val(), monthSelect.val());
-            updateTables(yearSelect.val(), yearSelect.val());
+            // Menambahkan Event Listener
+            function attachEventListeners() {
+                yearSelect.on('change', handleYearChange);
+                monthSelect.on('change', handleMonthChange);
+            }
+
+            // Jalankan Inisialisasi Dashboard
+            initDashboard();
         });
     </script>
 @stop

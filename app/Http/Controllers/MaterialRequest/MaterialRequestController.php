@@ -10,25 +10,41 @@ use App\Models\Item;
 use App\Models\User;
 use App\Models\WarehouseLog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class MaterialRequestController extends Controller
 {
     public function index()
     {
-        $materialRequests = MaterialRequest::with('requestor', 'project', 'items')->orderBy('created_at', 'asc')->get();
+        $user = Auth::user();
+        $query = MaterialRequest::with('requestor', 'project', 'items')->orderBy('created_at', 'asc');
+
+        // Jika user tidak memiliki izin approve_material_request, filter berdasarkan role
+        if (!$user->hasPermission('approve_material_request')) {
+            $userRoleNames = $user->roles->pluck('name');
+
+            $query->whereHas('requestor', function ($query) use ($userRoleNames) {
+                $query->whereHas('roles', function ($q) use ($userRoleNames) {
+                    $q->whereIn('name', $userRoleNames);
+                });
+            });
+        }
+
+        $materialRequests = $query->get();
         return view('pages.material-request.index', compact('materialRequests'));
     }
 
     public function getItems($mr_code)
     {
         $materialRequest = MaterialRequest::with('items.item')->where('mr_code', $mr_code)->firstOrFail();
-
         return response()->json([
             'items' => $materialRequest->items->map(function ($item) {
                 return [
                     'item_id' => $item->item->item_id ?? '-',
                     'item_code' => $item->item->item_code ?? '-',
                     'description' => $item->item->description ?? '-',
+                    'price' => $item->price,
                     'quantity' => $item->quantity,
                     'fulfilled_quantity' => $item->fulfilled_quantity,
                     'status' => ucfirst($item->status),
@@ -88,16 +104,29 @@ class MaterialRequestController extends Controller
 
     public function create()
     {
+        $user = Auth::user();
         $lastMr = MaterialRequest::latest('mr_code')->first();
         $lastMrNumber = $lastMr ? intval(substr($lastMr->mr_code, 3)) : 0;
 
         $projects = Project::all();
-        $users = User::where('is_active', 1)->get();
         $availableItems = Item::where('is_active', 1)->get();
+
+        // Jika user tidak memiliki permission approve_material_request, filter users berdasarkan role yang sama
+        if (!$user->hasPermission('approve_material_request')) {
+            $userRoleNames = $user->roles->pluck('name');
+
+            $users = User::where('is_active', 1)
+                ->whereHas('roles', function ($query) use ($userRoleNames) {
+                    $query->whereIn('name', $userRoleNames);
+                })
+                ->get();
+
+            return view('pages.material-request.form', compact('lastMrNumber', 'projects', 'users', 'availableItems'));
+        }
+        $users = User::where('is_active', 1)->get();
 
         return view('pages.material-request.form', compact('lastMrNumber', 'projects', 'users', 'availableItems'));
     }
-
 
     public function store(Request $request)
     {
@@ -107,6 +136,7 @@ class MaterialRequestController extends Controller
             'created_by' => 'required|exists:users,user_id',
             'items' => 'required|array|min:1',
             'items.*.item_id' => 'required|exists:items,item_id',
+            'items.*.price' => 'required|numeric|min:1',
             'items.*.quantity' => 'required|numeric|min:1',
         ], [
             // Pesan kesalahan khusus
@@ -115,6 +145,8 @@ class MaterialRequestController extends Controller
             'created_by.required' => 'Requestor harus dipilih.',
             'items.required' => 'Minimal 1 item harus ditambahkan.',
             'items.*.item_id.required' => 'Item harus dipilih.',
+            'items.*.price.required' => 'Harga item tidak boleh kosong.',
+            'items.*.price.min' => 'Harga item harus lebih dari 0.',
             'items.*.quantity.required' => 'Kuantitas item tidak boleh kosong.',
             'items.*.quantity.min' => 'Kuantitas item harus lebih dari 0.',
         ]);
@@ -133,6 +165,7 @@ class MaterialRequestController extends Controller
             MaterialRequestItem::create([
                 'mr_code' => $mrCode,
                 'item_id' => $item['item_id'],
+                'price' => $item['price'],
                 'quantity' => $item['quantity'],
                 'fulfilled_quantity' => 0,
                 'status' => 'pending',
@@ -160,6 +193,7 @@ class MaterialRequestController extends Controller
         $validated = $request->validate([
             'items' => 'required|array',
             'items.*.item_id' => 'required|exists:items,item_id',
+            'items.*.price' => 'required|numeric|min:1',
             'items.*.quantity' => 'required|integer|min:1',
         ]);
 
@@ -169,6 +203,7 @@ class MaterialRequestController extends Controller
             MaterialRequestItem::create([
                 'mr_code' => $mrCode,
                 'item_id' => $item['item_id'],
+                'price' => $item['price'],
                 'quantity' => $item['quantity'],
                 'fulfilled_quantity' => 0,
                 'status' => 'pending',

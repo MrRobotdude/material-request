@@ -46,16 +46,10 @@ class UserSeeder extends Seeder
                 'role' => 'warehouse',
             ],
             [
-                'name' => 'Finance User',
-                'username' => 'finance',
+                'name' => 'Data Entry User',
+                'username' => 'dataEntry',
                 'password' => Hash::make('password123'),
-                'role' => 'finance',
-            ],
-            [
-                'name' => 'User',
-                'username' => 'user',
-                'password' => Hash::make('password123'),
-                'role' => 'user',
+                'role' => 'data entry',
             ],
         ];
 

@@ -12,7 +12,7 @@ class MaterialRequestItem extends Model
     protected $table = 'material_request_items';
 
     public $timestamps = true;
-    protected $fillable = ['mr_code', 'item_id', 'quantity', 'fulfilled_quantity', 'status'];
+    protected $fillable = ['mr_code', 'item_id', 'price', 'quantity', 'fulfilled_quantity', 'status'];
 
     public function materialRequest()
     {

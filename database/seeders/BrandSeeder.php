@@ -4,31 +4,33 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\Brand;
+use Illuminate\Support\Str;
 
 class BrandSeeder extends Seeder
 {
     public function run()
     {
         $brands = [
-            ['brand_name' => 'Samsung', 'brand_initial' => 'SSG'],
-            ['brand_name' => 'Apple', 'brand_initial' => 'APL'],
-            ['brand_name' => 'Sony', 'brand_initial' => 'SNY'],
+            ['brand_name' => 'Daikin', 'brand_initial' => 'DKN'],
+            ['brand_name' => 'Mitsubishi Electric', 'brand_initial' => 'MEL'],
+            ['brand_name' => 'Carrier', 'brand_initial' => 'CRR'],
+            ['brand_name' => 'Trane', 'brand_initial' => 'TRN'],
+            ['brand_name' => 'Panasonic', 'brand_initial' => 'PNC'],
+            ['brand_name' => 'Toshiba', 'brand_initial' => 'TSB'],
+            ['brand_name' => 'York', 'brand_initial' => 'YRK'],
+            ['brand_name' => 'Hitachi', 'brand_initial' => 'HTC'],
             ['brand_name' => 'LG', 'brand_initial' => 'LG'],
-            ['brand_name' => 'Huawei', 'brand_initial' => 'HW'],
-            ['brand_name' => 'Xiaomi', 'brand_initial' => 'MI'],
-            ['brand_name' => 'Oppo', 'brand_initial' => 'OP'],
-            ['brand_name' => 'Dell', 'brand_initial' => 'DEL'],
-            ['brand_name' => 'Asus', 'brand_initial' => 'ASU'],
-            ['brand_name' => 'HP', 'brand_initial' => 'HPQ'],
-            ['brand_name' => 'Acer', 'brand_initial' => 'ACR'],
+            ['brand_name' => 'Fujitsu', 'brand_initial' => 'FJT'],
         ];
 
         foreach ($brands as $brandData) {
             Brand::create([
-                'brand_code' => Brand::generateBrandCode(),
+                'brand_code' => method_exists(Brand::class, 'generateBrandCode')
+                    ? Brand::generateBrandCode()
+                    : Str::random(6), // Fallback jika method tidak ada
                 'brand_name' => $brandData['brand_name'],
                 'brand_initial' => $brandData['brand_initial'],
-                'is_active' => 1,
+                'is_active' => true,
             ]);
         }
     }

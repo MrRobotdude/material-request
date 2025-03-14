@@ -16,7 +16,7 @@ class ChangePasswordController extends Controller
     public function showChangePasswordForm($user = null)
     {
         $currentUser = Auth::user();
-
+        
         // Jika admin, izinkan melihat form untuk pengguna lain
         if ($currentUser->hasRole('admin') && $user) {
             $targetUser = User::findOrFail($user);

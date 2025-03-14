@@ -4,17 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\MaterialRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
     public function index(Request $request)
     {
         // Ambil semua tahun dan bulan dari data MaterialRequest
-        $availableMonths = MaterialRequest::selectRaw('YEAR(created_at) as year, MONTH(created_at) as month')
-            ->distinct()
-            ->orderBy('year')
-            ->orderBy('month')
-            ->get();
+        $availableMonths = $this->getAvailableMonths();
 
         // Ambil bulan dan tahun dari request atau default ke bulan dan tahun terbaru
         $latestRequest = MaterialRequest::latest('created_at')->first();
@@ -27,11 +24,7 @@ class DashboardController extends Controller
         }
 
         // Query data berdasarkan bulan dan tahun
-        $statusCounts = MaterialRequest::select('status', \DB::raw('count(*) as count'))
-            ->whereYear('created_at', $year)
-            ->whereMonth('created_at', $month)
-            ->groupBy('status')
-            ->get();
+        $statusCounts = $this->getStatusCountsByMonth($year, $month);
 
         // Pastikan statusCounts tidak null
         if ($statusCounts->isEmpty()) {
@@ -41,7 +34,25 @@ class DashboardController extends Controller
         return view('pages.dashboard', compact('statusCounts', 'availableMonths', 'month', 'year'));
     }
 
-    public function getAvailableMonths($year)
+    private function getAvailableMonths()
+    {
+        return MaterialRequest::selectRaw('YEAR(created_at) as year, MONTH(created_at) as month')
+            ->distinct()
+            ->orderBy('year')
+            ->orderBy('month')
+            ->get();
+    }
+
+    private function getStatusCountsByMonth($year, $month)
+    {
+        return MaterialRequest::select('status', DB::raw('count(*) as count'))
+            ->whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
+            ->groupBy('status')
+            ->get();
+    }
+
+    public function getMonthsByYear($year)
     {
         // Validasi input tahun
         if (!is_numeric($year) || strlen($year) !== 4) {
@@ -57,7 +68,7 @@ class DashboardController extends Controller
         return response()->json($months);
     }
 
-    public function getChartData($year, $month)
+    public function getStatusDataForMRItem($year, $month)
     {
         // Validasi input
         if (!is_numeric($year) || strlen($year) !== 4 || !is_numeric($month) || $month < 1 || $month > 12) {
@@ -74,7 +85,7 @@ class DashboardController extends Controller
         ];
 
         // Query untuk mendapatkan data
-        $queryResults = \DB::table('material_request_items')
+        $queryResults = DB::table('material_request_items')
             ->join('material_requests', 'material_request_items.mr_code', '=', 'material_requests.mr_code')
             ->whereYear('material_requests.created_at', $year)
             ->whereMonth('material_requests.created_at', $month)
@@ -97,7 +108,7 @@ class DashboardController extends Controller
     }
 
 
-    public function getMonthlyStatusChart($year)
+    public function getStatusDataForMR($year)
     {
         $statuses = ['created', 'approved', 'partial', 'completed', 'cancelled'];
         $colors = [
@@ -141,9 +152,9 @@ class DashboardController extends Controller
         ]);
     }
 
-    public function getTopItems($year, $month)
+    public function getTopRequestedItems($year, $month)
     {
-        $items = \DB::table('material_request_items')
+        $items = DB::table('material_request_items')
             ->join('items', 'material_request_items.item_id', '=', 'items.item_id')
             ->join('material_requests', 'material_request_items.mr_code', '=', 'material_requests.mr_code')
             ->whereYear('material_requests.created_at', $year)
@@ -160,7 +171,7 @@ class DashboardController extends Controller
 
     public function getTopProjects($year, $month)
     {
-        $projects = \DB::table('material_requests')
+        $projects = DB::table('material_requests')
             ->join('projects', 'material_requests.project_id', '=', 'projects.project_id')
             ->join('material_request_items', 'material_requests.mr_code', '=', 'material_request_items.mr_code')
             ->whereYear('material_requests.created_at', $year)

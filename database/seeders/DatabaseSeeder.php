@@ -27,7 +27,6 @@ class DatabaseSeeder extends Seeder
             ProjectSeeder::class,
             MaterialRequestSeeder::class,
             MaterialRequestItemSeeder::class,
-            WarehouseLogSeeder::class,
         ]);
     }
 }

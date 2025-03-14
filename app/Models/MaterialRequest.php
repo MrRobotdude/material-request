@@ -13,9 +13,7 @@ class MaterialRequest extends Model
     protected $primaryKey = 'mr_code';
     protected $keyType = 'string';
     public $incrementing = false;
-
     public $timestamps = true;
-    
     protected $fillable = ['mr_code', 'project_id', 'note', 'created_by', 'status'];
 
     public function project()

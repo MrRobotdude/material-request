@@ -28,10 +28,10 @@ Route::get('/', function () {
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/dashboard/months/{year}', [DashboardController::class, 'getAvailableMonths']);
-    Route::get('/dashboard/chart/{year}/{month}', [DashboardController::class, 'getChartData']);
-    Route::get('/dashboard/monthly-status-chart/{year}', [DashboardController::class, 'getMonthlyStatusChart']);
-    Route::get('/dashboard/top-items/{year}/{month}', [DashboardController::class, 'getTopItems']);
+    Route::get('/dashboard/months/{year}', [DashboardController::class, 'getMonthsByYear']);
+    Route::get('/dashboard/chart/{year}/{month}', [DashboardController::class, 'getStatusDataForMRItem']);
+    Route::get('/dashboard/monthly-status-chart/{year}', [DashboardController::class, 'getStatusDataForMR']);
+    Route::get('/dashboard/top-items/{year}/{month}', [DashboardController::class, 'getTopRequestedItems']);
     Route::get('/dashboard/top-projects/{year}/{month}', [DashboardController::class, 'getTopProjects']);
 
 
@@ -175,6 +175,9 @@ Route::middleware(['auth'])->group(function () {
             ->middleware('permission:edit_account')->name('account-management.update');
         Route::put('/{user}/toggle-status', [AccountManagementController::class, 'toggleStatus'])
             ->middleware('permission:manage_account_status')->name('account-management.toggle-status');
+    });
+
+    Route::prefix('account-management')->group(function () {
         Route::get('/{user}/change-password', [ChangePasswordController::class, 'showChangePasswordForm'])
             ->middleware('can-change-password')->name('account-management.change-password');
         Route::post('/{user}/change-password', [ChangePasswordController::class, 'changePassword'])
@@ -198,7 +201,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/{mrCode}/cancel', [MaterialRequestController::class, 'cancel'])
             ->middleware('permission:cancel_material_request')->name('material-request.cancel');
         Route::post('/{mrCode}/items/{item_id}/release', [MaterialRequestController::class, 'release'])
-            ->middleware('permission:release_material_request_items')->name('material-request.release');
+            ->middleware('permission:release_material_request_item')->name('material-request.release');
         Route::post('/{mrCode}/approve', [MaterialRequestController::class, 'approve'])
             ->middleware('permission:approve_material_request')->name('material-request.approve');
     });

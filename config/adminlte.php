@@ -303,68 +303,96 @@ return [
         [
             'text' => 'Dashboard',
             'url' => 'dashboard',
-            'icon' => 'fas fa-chart-line', // Ikon untuk dashboard/overview
+            'icon' => 'fas fa-chart-line',
         ],
-        ['header' => 'MATERIAL REQUEST'],
+        [
+            'header' => 'MATERIAL REQUEST',
+            'can' => [
+                'manage_all_projects',
+                'view_projects_page',
+                'manage_all_material_requests',
+                'view_material_requests_page',
+                'manage_all_material_requests',
+                'view_material_requests_page'
+            ]
+        ],
         [
             'text' => 'Project',
             'url' => 'project-management',
-            'icon' => 'fas fa-project-diagram', // Ikon untuk pengelolaan proyek
+            'icon' => 'fas fa-project-diagram',
             'can' => ['manage_all_projects', 'view_projects_page'],
         ],
         [
             'text' => 'Material Request',
             'url' => 'material-requests',
-            'icon' => 'fas fa-clipboard-list', // Ikon untuk daftar permintaan
+            'icon' => 'fas fa-clipboard-list',
             'can' => ['manage_all_material_requests', 'view_material_requests_page'],
         ],
         [
             'text' => 'Warehouse Log',
             'url' => 'warehouse-logs',
-            'icon' => 'fas fa-warehouse', // Ikon untuk catatan gudang
+            'icon' => 'fas fa-warehouse',
             'can' => ['manage_all_material_requests', 'view_material_requests_page'],
         ],
-        ['header' => 'MASTER'],
+        [
+            'header' => 'MASTER',
+            'can' => [
+                'manage_all_brand',
+                'view_brands_page',
+                'manage_all_product',
+                'view_products_page',
+                'manage_all_specifications',
+                'view_specifications_page',
+                'manage_all_brand_product_specification',
+                'view_brand_product_specification',
+                'manage_all_types',
+                'view_types_page',
+                'manage_all_subtypes',
+                'view_subtypes_page',
+                'manage_all_items',
+                'view_items_page'
+            ]
+        ],
         [
             'text' => 'Brand Management',
             'url' => 'brand-management',
-            'icon' => 'fas fa-tag', // Ikon untuk pengelolaan merek
+            'icon' => 'fas fa-tag',
             'can' => ['manage_all_brand', 'view_brands_page'],
         ],
         [
             'text' => 'Product Management',
             'url' => 'product-management',
-            'icon' => 'fas fa-box-open', // Ikon untuk produk
+            'icon' => 'fas fa-box-open',
             'can' => ['manage_all_product', 'view_products_page'],
         ],
         [
             'text' => 'Specification Management',
             'url' => 'specification-management',
-            'icon' => 'fas fa-sliders-h', // Ikon untuk pengelolaan spesifikasi
+            'icon' => 'fas fa-sliders-h',
             'can' => ['manage_all_specifications', 'view_specifications_page'],
         ],
         [
             'text' => 'Brand Product Specification',
             'url' => 'brand-product-specification',
-            'icon' => 'fas fa-tags', // Ikon untuk spesifikasi produk merek
+            'icon' => 'fas fa-tags',
             'can' => ['manage_all_brand_product_specification', 'view_brand_product_specification'],
         ],
         [
             'text' => 'Type Management',
             'url' => 'type-management',
-            'icon' => 'fas fa-th-large', // Ikon untuk tipe
+            'icon' => 'fas fa-th-large',
             'can' => ['manage_all_types', 'view_types_page'],
         ],
         [
             'text' => 'Sub Type Management',
             'url' => 'sub-type-management',
-            'icon' => 'fas fa-stream', // Ikon untuk sub-tipe
+            'icon' => 'fas fa-stream',
             'can' => ['manage_all_subtypes', 'view_subtypes_page'],
         ],
         [
             'text' => 'Item Management',
             'url' => 'item-management',
-            'icon' => 'fas fa-cubes', // Ikon untuk pengelolaan item
+            'icon' => 'fas fa-cubes',
             'can' => ['manage_all_items', 'view_items_page'],
         ],
         ['header' => 'ACCOUNT SETTINGS'],

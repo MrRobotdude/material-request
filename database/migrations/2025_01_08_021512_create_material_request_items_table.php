@@ -13,6 +13,7 @@ return new class extends Migration {
             $table->foreign('mr_code')->references('mr_code')->on('material_requests')->onDelete('cascade');
             $table->unsignedBigInteger('item_id');
             $table->foreign('item_id')->references('item_id')->on('items')->onDelete('cascade');
+            $table->decimal('price', 15, 2)->default(0);
             $table->integer('quantity');
             $table->integer('fulfilled_quantity')->default(0);
             $table->enum('status', ['pending', 'partial', 'fulfilled', 'cancelled'])->default('pending');

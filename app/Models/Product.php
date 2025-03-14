@@ -8,13 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class Product extends Model
 {
     use HasFactory;
-
+    protected $table = 'products';
     public $timestamps = true;
-
     protected $primaryKey = 'product_code'; // Primary key adalah product_code
     public $incrementing = false; // Non-incremental key
     protected $keyType = 'string'; // Tipe data primary key adalah string
-
     protected $fillable = [
         'product_code',
         'product_name',

@@ -62,7 +62,7 @@ return [
         'approve_material_request',
         'cancel_material_request',
         'cancel_material_request_item',
-        'release_material_request_items',
+        'release_material_request_item',
         'view_material_request_items',
     ],
     'manage_all_projects' => [
