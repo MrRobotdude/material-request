@@ -33,7 +33,11 @@ class MaterialRequestItemSeeder extends Seeder
                 } elseif ($status === 'partial') {
                     $itemStatus = $statusesForPartial[array_rand($statusesForPartial)];
                     if ($itemStatus === 'partial') {
-                        $fulfilledQuantity = rand(1, $quantity - 1);
+                        if ($quantity > 1) {
+                            $fulfilledQuantity = rand(1, $quantity - 1);
+                        } else {
+                            $itemStatus = 'pending';
+                        }
                     } elseif ($itemStatus === 'fulfilled') {
                         $fulfilledQuantity = $quantity;
                     } elseif ($itemStatus === 'cancelled') {

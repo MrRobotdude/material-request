@@ -36,11 +36,21 @@ class DashboardController extends Controller
 
     private function getAvailableMonths()
     {
-        return MaterialRequest::selectRaw('YEAR(created_at) as year, MONTH(created_at) as month')
+        return MaterialRequest::selectRaw($this->datePartSql('year') . ' as year, ' . $this->datePartSql('month') . ' as month')
             ->distinct()
             ->orderBy('year')
             ->orderBy('month')
             ->get();
+    }
+
+    private function datePartSql($part)
+    {
+        if (DB::connection()->getDriverName() === 'sqlite') {
+            $format = $part === 'year' ? '%Y' : '%m';
+            return "CAST(strftime('{$format}', created_at) AS INTEGER)";
+        }
+
+        return $part === 'year' ? 'YEAR(created_at)' : 'MONTH(created_at)';
     }
 
     private function getStatusCountsByMonth($year, $month)
@@ -60,7 +70,7 @@ class DashboardController extends Controller
         }
 
         $months = MaterialRequest::whereYear('created_at', $year)
-            ->selectRaw('MONTH(created_at) as month')
+            ->selectRaw($this->datePartSql('month') . ' as month')
             ->distinct()
             ->orderBy(('month'))
             ->pluck('month');
@@ -110,6 +120,9 @@ class DashboardController extends Controller
 
     public function getStatusDataForMR($year)
     {
+        if (!ctype_digit((string) $year) || strlen((string) $year) !== 4) {
+            return response()->json(['error' => 'Invalid year'], 400);
+        }
         $statuses = ['created', 'approved', 'partial', 'completed', 'cancelled'];
         $colors = [
             'created' => '#007bff',
@@ -124,7 +137,7 @@ class DashboardController extends Controller
 
         // Ambil data dari database
         $monthlyData = MaterialRequest::whereYear('created_at', $year)
-            ->selectRaw('MONTH(created_at) as month, LOWER(status) as status, COUNT(*) as count')
+            ->selectRaw($this->datePartSql('month') . ' as month, LOWER(status) as status, COUNT(*) as count')
             ->groupBy('month', 'status')
             ->orderBy('month')
             ->get();
