@@ -54,7 +54,7 @@ class UserSeeder extends Seeder
         ];
 
         foreach ($users as $userData) {
-            $role = Role::where('name', $userData['role'])->first();
+            $role = Role::where('name', ucwords($userData['role']))->firstOrFail();
             unset($userData['role']);
 
             $userData['user_id'] = User::generateUserId($joinDate); // Buat user_id
